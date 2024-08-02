@@ -1,6 +1,5 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/ykf279M7)
-# Labb2WebbTemplate
-# LABB 2 APIer
+# Uppgiftsbeskrivning
+## LABB 2 - APIer
 
 I denna uppgift skall vi implementera 
 databashantering och REST API för en e-handel.
@@ -9,8 +8,6 @@ Labben är uppdelad i två delar. Den första delen är
 att skapa APIet.
 
 Den andra delen är att skapa en Frontend som använder APIet.
-
-**För att få andra delen av uppgiften ska man kunna uppvisa att man uppfyllt kraven för APIet. När man påbörjar del två får man inte längre uppdatera sitt API från del 1, förutom när .**
 
 ## Beställning
 
@@ -59,33 +56,3 @@ De har följande krav på lösningen:
 REST Api-lösningen skall utvecklas enligt objektorienterade principer och använda följa Single Responsibility Principle.
 
 All databaskommunikation skall också ske med hjälp av Repository Pattern.
-
-## Redovisning
-
-Använd repot genom uppgiften i GitHub-Classrom.
-Skapa en branch som heter `development` att arbeta i. När arbetet är färdigt pusha till `main` och lämna in på ITHS-Distans.
-
-## Bedömning
-
-### Godkänt(G)
-
-En API-specifikation ska skrivas och bifogas i repositoryt.
-Denna specifikation ska tydligt redogöra för alla endpoints och deras funktion.
-
-För att få godkänt skall alla delar för produkthantering vara implementerade.
-
-Kravet på att följa Single Responsibility Principle skall vara implementerat.
-
-Repository Pattern skall vara implementerat och användas för all databaskommunikation.
-
-En klientapplikation skall nyttja REST Api:et och uppfylla designkraven. (Del 2)
-
-### Väl godkänt(VG)
-
-För väl godkänt skall alla krav på G nivån vara uppfyllda. Förutom detta skall REST Api:et även implementera Unit of Work mönstret.
-
-Klientapplikationen skall dessutom kunna hantera kunder och presentation av vilka produkter som kunden har köpt(ordrar).
-
-Man ska dessutom nyttja rollbaserad autentisering med JWT. Antingen egenimplementerat, OAuth eller med Identity Server.
-
-Om en Admin är inloggad ska man få tillgång till en admin-sida där man kan se kunder och ordrar samt ändra i sortimentet.
