@@ -1,0 +1,20 @@
+﻿:root {
+    --rz-primary: #8f764b;
+    --rz-primary-lighter: #CAA769;
+    --rz-primary-light: #ECC37B;
+    --rz-primary-darker: #645334;
+    --rz-primary-dark: #423722;
+    --rz-color-primary: #8f764b;
+    --rz-panel-menu-item-active-color: #ffffff;
+    --rz-grid-selected-color: #ffffff;
+    --rz-panel-menu-item-2nd-level-active-color: #ffffff;
+    --rz-text-font-family: 'Open Sans', sans-serif;
+    --bs-primary: #8f764b;
+}
+body{
+    font-family: 'Open Sans', sans-serif;
+}
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    color: #fff;
+    background-color: #8f764b !important;
+}

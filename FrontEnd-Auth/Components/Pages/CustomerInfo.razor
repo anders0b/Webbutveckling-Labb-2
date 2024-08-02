@@ -1,0 +1,67 @@
+﻿@page "/Account/kundinfo"
+@using Common.Models
+@using FrontEnd.Services
+@using FrontEnd_Auth.Components.Account
+@using FrontEnd_Auth.Data
+@using Microsoft.AspNetCore.Identity
+@inject CustomerService CustomerService
+@inject NotificationService notificationService
+<h3>Kund</h3>
+<RadzenStack Gap="1rem" Orientation="Orientation.Vertical" JustifyContent="JustifyContent.SpaceBetween" Style="height: 100%;">
+    <RadzenTemplateForm TItem="CustomerModel" Data=@customer Submit=@onSubmit InvalidSubmit=@onInvalidSubmit>
+        <RadzenRow AlignItems="AlignItems.End" Wrap="FlexWrap.Wrap" Gap="1rem" Class="rz-p-sm-12">
+            <RadzenFormField Text="Id" Style="width: 100%;">
+                <RadzenNumeric Disabled="true" @bind-Value="@customer.Id" Style="width: 100%;" />
+            </RadzenFormField>
+            <RadzenFormField Text="Förnamn" Style="width: 100%;">
+                <RadzenTextBox @bind-Value="@customer.FirstName" Style="width: 100%;" />
+            </RadzenFormField>
+            <RadzenFormField Text="Efternamn" Style="width: 100%;">
+                <RadzenTextBox @bind-Value="@customer.LastName" Style="width: 100%;"/>
+            </RadzenFormField>
+            <RadzenFormField Text="Email" Style="width: 100%;">
+                <RadzenTextBox Disabled="true" Name="Email" @bind-Value="@customer.Email" Style="width: 100%;" />
+            </RadzenFormField>
+            <RadzenFormField Text="Telefon" Style="width: 100%;">
+                <RadzenTextBox @bind-Value="@customer.Phone" Style="width: 100%;" />
+            </RadzenFormField>
+            <RadzenFormField Text="Adress" Style="width: 100%;">
+                <RadzenTextBox @bind-Value="@customer.StreetAddress" Style="width: 100%;" />
+            </RadzenFormField>
+            <RadzenFormField Text="Postnummer" Style="width: 100%;">
+                <RadzenNumeric @bind-Value="@customer.PostalCode" Style="width: 100%;" />
+            </RadzenFormField>
+            <RadzenFormField Text="Stad" Style="width: 100%;">
+                <RadzenTextBox @bind-Value="@customer.City" Style="width: 100%;" />
+            </RadzenFormField>
+        </RadzenRow>
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="0.5rem">
+            <RadzenButton ButtonType="ButtonType.Submit" Variant="Variant.Flat" Text="Submit" Style="width: 120px" />
+        </RadzenStack>
+    </RadzenTemplateForm>
+</RadzenStack>
+
+@code {
+    private string email { get; set; } = "anders@test.se";
+    private CustomerModel customer { get; set; } = new();
+    private ApplicationUser user = default!;
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        customer = await CustomerService.GetCustomerByEmail(email);
+    }
+    public async Task onSubmit()
+    {
+        await CustomerService.UpdateCustomer(customer);
+        notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Uppdaterad", Detail = "Du har uppdaterat din information", Duration = 4000 });
+        customer = await CustomerService.GetCustomerByEmail(email);
+
+    }
+    public void onInvalidSubmit()
+    {
+        notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = "Fel", Detail = "Var vänlig se över input", Duration = 4000 });
+    }
+}

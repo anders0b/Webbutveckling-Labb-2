@@ -1,0 +1,17 @@
+﻿@inherits LayoutComponentBase
+@layout AccountLayout
+
+<h1>Hantera ditt konto</h1>
+
+<div>
+    <RadzenLink Path="/">Gå tillbaka till startsidan</RadzenLink>
+    <hr/>
+    <div class="row">
+        <div class="col-md-3">
+            <ManageNavMenu/>
+        </div>
+        <div class="col-md-9">
+            @Body
+        </div>
+    </div>
+</div>
