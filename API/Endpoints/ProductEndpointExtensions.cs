@@ -1,4 +1,4 @@
-﻿using DataAccess.Entities;
+﻿using Common.Models;
 using Services.Interfaces;
 
 namespace API.Endpoints;

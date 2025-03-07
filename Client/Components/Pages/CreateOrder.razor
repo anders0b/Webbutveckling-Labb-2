@@ -1,0 +1,100 @@
+﻿@page "/orders/create-order"
+@using Common.Models
+@using FrontEnd.Services
+@inject OrderService OrderService
+@inject CustomerService CustomerService
+@inject ProductService ProductService
+@inject Radzen.DialogService dialogService
+@inject NotificationService notificationService
+<RadzenStack Gap="1rem" Orientation="Orientation.Vertical" JustifyContent="JustifyContent.SpaceBetween" Style="height: 100%;">
+    <RadzenTemplateForm TItem="Order" Data=@order Submit=@onSubmit InvalidSubmit=@onInvalidSubmit>
+        <RadzenRow AlignItems="AlignItems.End" Wrap="FlexWrap.Wrap" Gap="1rem" Class="rz-p-sm-12">
+            <RadzenLabel Text="Välj kund" Style="width: 100%;" />
+            <RadzenDropDown @bind-Value=@order.CustomerId TextProperty="FirstName" ValueProperty="Id" TValue="int" Data=@customers></RadzenDropDown>
+            <RadzenLabel Text="Beställningsdatum" Component="RadzenDatePickerChangeEvent" Style="width: 100%;"/>
+            <RadzenDatePicker TValue="DateOnly?" Value=@value DateFormat="MM/dd/yyyy" Name="RadzenDatePickerChangeEvent"/>
+            <RadzenLabel Text="Skickad?" Style="width: 100%;"/>
+            <RadzenRadioButtonList @bind-Value="@order.IsShipped" TValue="bool" class="mb-1">
+                <Items>
+                    <RadzenRadioButtonListItem Text="Ja" Value="true"/>
+                    <RadzenRadioButtonListItem Text="Nej" Value="false"/>
+                </Items>
+            </RadzenRadioButtonList>
+        <RadzenLabel Text="Produkt" Style="width: 100%;" />
+        <RadzenDropDown @bind-Value=@orderDetails.ProductId TextProperty="Name" ValueProperty="Id" TValue="int" Data=@products></RadzenDropDown>
+        <RadzenFormField Text="Antal" Style="width: 100%;">
+            <RadzenNumeric Min="1" @bind-Value=@orderDetails.Quantity Style="width: 100%;" />
+        </RadzenFormField>
+            <RadzenDataGrid @ref="orderdetailsgrid" Data="@tempOrderDetails" TItem="OrderDetails" AllowPaging="false" AllowSorting="true" PageSize="10" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@selectedOrderDetails>
+                <Columns>
+                    <RadzenDataGridColumn TItem="OrderDetails" Property="ProductId" Title="Produkt">
+                        <Template Context="data">
+                            @products.FirstOrDefault(x => x.Id == data.ProductId)?.Name
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="OrderDetails" Property="Quantity" Title="Quantity"/>
+                </Columns>
+        </RadzenDataGrid>
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" Gap="0.5rem">
+            <RadzenButton Click=@addOrderDetails Text="Add Order Detail" />
+                <RadzenButton Variant="Variant.Flat" Click=@DeleteOrderDetail Text="Remove Selected" />
+        </RadzenStack>
+        </RadzenRow>
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="0.5rem">
+            <RadzenButton ButtonType="ButtonType.Submit" Variant="Variant.Flat" Text="Submit" Style="width: 120px" />
+            <RadzenButton Click="@((args) => dialogService.Close(true))" Variant="Variant.Outlined" Text="Close" Style="width: 120px" />
+        </RadzenStack>
+    </RadzenTemplateForm>
+</RadzenStack>
+
+@code {
+    private OrderDetails orderDetails { get; set; } = new();
+    private List<OrderDetails> tempOrderDetails { get; set; } = new();
+    private Order order { get; set; } = new();
+    private IEnumerable<Order> orders { get; set; }
+    private IEnumerable<Customer> customers { get; set; }
+    private IEnumerable<Product> products { get; set; }
+    DateOnly value = DateOnly.FromDateTime(DateTime.Now);
+    IList<OrderDetails> selectedOrderDetails;
+    RadzenDataGrid<OrderDetails> orderdetailsgrid;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        orders = await OrderService.GetAllOrders();
+        products = await ProductService.GetAllProducts();
+        customers = await CustomerService.GetAllCustomers();
+
+    }
+    public async Task addOrderDetails()
+    {
+        if (tempOrderDetails.Any(x => x.ProductId == orderDetails.ProductId))
+        {
+            tempOrderDetails.FirstOrDefault(x => x.ProductId == orderDetails.ProductId).Quantity = orderDetails.Quantity;
+            return;
+        }
+        tempOrderDetails.Add(orderDetails);
+        orderDetails = new OrderDetails();
+        orderdetailsgrid.Reload();
+    }
+
+    public async Task onSubmit()
+    {
+        order.OrderDetails = tempOrderDetails;
+        await OrderService.AddOrder(order);
+        order = new Order();
+    }
+    public void onInvalidSubmit()
+    {
+        notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = "Fel", Detail = "Var vänlig se över input", Duration = 4000 });
+    }
+    public async Task DeleteOrderDetail()
+    {
+        if (selectedOrderDetails.Count == 0)
+        {
+            return;
+        }
+        tempOrderDetails.Remove(selectedOrderDetails[0]);
+        orderdetailsgrid.Reload();
+    }
+}

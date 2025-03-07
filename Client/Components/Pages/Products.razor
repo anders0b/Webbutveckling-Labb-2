@@ -1,0 +1,77 @@
+﻿@using Common.Models
+@using FrontEnd.Services
+@page "/products"
+@inject ProductService ProductService
+@inject CategoryService CategoryService
+@inject DialogService DialogService
+<RadzenText TextStyle="TextStyle.H3">Produkter</RadzenText>
+<RadzenText>
+    Hantera produkter och lagerstatus.
+</RadzenText>
+<RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" class="mb-3">
+    <RadzenButton Click=@CreateProduct Variant="Variant.Flat" Text="Skapa" />
+    <RadzenButton ButtonStyle="ButtonStyle.Info" Click=@UpdateStock Variant="Variant.Flat" Text="Markera som i lager/inte" />
+    <RadzenButton ButtonStyle="ButtonStyle.Danger" Click=@DeleteProduct Variant="Variant.Flat" Text="Ta bort markerad" />
+</RadzenStack>
+<RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="10" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                Data="@products" TItem="Product" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@selectedProducts>
+    <Columns>
+        <RadzenDataGridColumn TItem="Product" Property="Id" Filterable="false" Title="ID" Frozen="true" Width="80px" TextAlign="TextAlign.Center" />
+        <RadzenDataGridColumn TItem="Product" Property="Name" Title="Namn" Frozen="true" Width="160px" />
+        <RadzenDataGridColumn TItem="Product" Property="CategoryId" Title="Kategori" Width="160px">
+            <Template Context="detail">
+                @Categories.FirstOrDefault(i => i.Id == detail.CategoryId)?.Name
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="Product" Property="Description" Title="Beskrivning" Width="200px" />
+        <RadzenDataGridColumn TItem="Product" Property="Price" Title="Pris" Width="120px">
+            <Template Context="detail">
+                @String.Format(new System.Globalization.CultureInfo("sv-SE"), "{0:C}", detail.Price)
+            </Template>
+        </RadzenDataGridColumn>       
+        <RadzenDataGridColumn TItem="Product" Property="Status" Title="I lager" Width="160px">
+            <Template Context="detail">
+                @(detail.Status ? "Ja" : "Nej")
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+@code {
+    private IEnumerable<Product> products { get; set; }
+    private List<Category> Categories { get; set; } = new();
+    IList<Product> selectedProducts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        products = await ProductService.GetAllProducts();
+        Categories.AddRange(await CategoryService.GetAllCategories());
+        selectedProducts = new List<Product>() { products.FirstOrDefault() };
+    }
+    public async Task CreateProduct()
+    {
+        await DialogService.OpenAsync<CreateProduct>("Skapa/Redigera Produkt");
+        new DialogOptions() { Width = "700px", Height = "512px", Resizable = true, Draggable = true };
+    }
+    public async Task DeleteProduct()
+    {
+        await ProductService.DeleteProduct(selectedProducts.FirstOrDefault().Id);
+        products = await ProductService.GetAllProducts();
+    }
+    public async Task UpdateStock()
+    {
+        if (selectedProducts == null)
+        {
+            return;
+        }
+        if (selectedProducts.FirstOrDefault().Status == false)
+        {
+            await ProductService.UpdateProductStatus(selectedProducts.FirstOrDefault().Id, true);
+        }
+        else
+        {
+            await ProductService.UpdateProductStatus(selectedProducts.FirstOrDefault().Id, false);
+        }
+        products = await ProductService.GetAllProducts();
+    }
+}

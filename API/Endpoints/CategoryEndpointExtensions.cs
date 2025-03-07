@@ -1,5 +1,4 @@
-﻿using DataAccess.Entities;
-using DataAccess.Interfaces;
+﻿using Common.Models;
 using Services.Interfaces;
 
 namespace API.Endpoints;
@@ -20,7 +19,7 @@ public static class CategoryEndpointExtensions
             var category = await categoryService.GetCategoryById(id);
             if (category == null)
             {
-                return Results.NotFound("Id not found");
+                return Results.BadRequest("Id not found");
             }
             return Results.Ok(category);
         });

@@ -1,0 +1,95 @@
+﻿@page "/customers/create-customer"
+@using Common.Models
+@using FrontEnd.Services
+@inject CustomerService CustomerService
+@inject Radzen.DialogService dialogService
+@inject NotificationService notificationService
+
+<RadzenStack Gap="1rem" Orientation="Orientation.Vertical" JustifyContent="JustifyContent.SpaceBetween" Style="height: 100%;">
+    <RadzenTemplateForm Data="customer" TItem="Customer" Submit=@onSubmit InvalidSubmit=@onInvalidSubmit>
+        <RadzenRow AlignItems="AlignItems.End" Wrap="FlexWrap.Wrap" Gap="1rem" Class="rz-p-sm-12">
+            <RadzenColumn>
+                <RadzenLabel Text=@state Style="width: 100%;"/>
+                <RadzenDropDown ValueProperty="Id" TValue="int" @bind-Value="@customerId" TextProperty="Id" Data=@customers Change=@EditCustomer/>
+            </RadzenColumn>
+            <RadzenColumn>
+                <RadzenButton Click=@ClearCurrent Variant="Variant.Flat" Text="Clear" Style="width: 120px"/>
+            </RadzenColumn>
+            <RadzenFormField Text="Id" Style="width: 100%;">
+                <RadzenNumeric Disabled="true" @bind-Value="@customer.Id" Style="width: 100%;"/>
+            </RadzenFormField>
+            <RadzenFormField Text="Förnamn" Style="width: 100%;">
+                <RadzenTextBox @bind-Value="@customer.FirstName" Style="width: 100%;"/>
+            </RadzenFormField>
+            <RadzenFormField Text="Efternamn" Style="width: 100%;">
+                <RadzenTextBox @bind-Value="@customer.LastName" Style="width: 100%;"/>
+            </RadzenFormField>
+            <RadzenFormField Text="Email" Style="width: 100%;">
+                <RadzenTextBox Name="Email" @bind-Value="@customer.Email" Style="width: 100%;"/>
+            </RadzenFormField>
+            <RadzenRequiredValidator Component="Email" Text="Email is required" Popup=@popup Style="position: relative"/>
+            <RadzenEmailValidator Component="Email" Text="Provide a valid email address" Popup=@popup Style="position: relative"/>
+            <RadzenFormField Text="Telefon" Style="width: 100%;">
+                <RadzenTextBox @bind-Value="@customer.Phone" Style="width: 100%;"/>
+            </RadzenFormField>
+            <RadzenFormField Text="Adress" Style="width: 100%;">
+                <RadzenTextBox @bind-Value="@customer.StreetAddress" Style="width: 100%;"/>
+            </RadzenFormField>
+            <RadzenFormField Text="Postnummer" Style="width: 100%;">
+                <RadzenNumeric @bind-Value="@customer.PostalCode" Style="width: 100%;"/>
+            </RadzenFormField>
+            <RadzenFormField Text="Stad" Style="width: 100%;">
+                <RadzenTextBox @bind-Value="@customer.City" Style="width: 100%;"/>
+            </RadzenFormField>
+        </RadzenRow>
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="0.5rem">
+            <RadzenButton ButtonType="ButtonType.Submit" Variant="Variant.Flat" Text="Submit" Style="width: 120px"/>
+            <RadzenButton Click="@((args) => dialogService.Close(true))" Variant="Variant.Outlined" Text="Close" Style="width: 120px"/>
+        </RadzenStack>
+    </RadzenTemplateForm>
+</RadzenStack>
+
+@code {
+    List<Customer> customers { get; set; } = new();
+    private Customer customer { get; set; } = new();
+    bool popup = true;
+    string state = "Skapa kund";
+    private int customerId = 0;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        customers.AddRange(await CustomerService.GetAllCustomers());
+    }
+    public void ClearCurrent()
+    {
+        customer = new Customer();
+        state = "Skapa kund";
+    }
+    public void EditCustomer()
+    {
+        customer = customers.FirstOrDefault(c => c.Id == customerId);
+        state = "Redigera kund";
+    }
+    public async Task onSubmit()
+    {
+        if (customer.Id != 0)
+        {
+            await CustomerService.UpdateCustomer(customer);
+            notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Uppdaterad", Detail = "Du har uppdaterat en kund", Duration = 4000 });
+            StateHasChanged();
+        }
+        else
+        {
+            await CustomerService.AddCustomer(customer);
+            notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Skapad", Detail = "Du har skapat en kund", Duration = 4000 });
+            StateHasChanged();
+        }
+        customer = new Customer();
+    }
+    public void onInvalidSubmit()
+    {
+        notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = "Fel", Detail = "Var vänlig se över input", Duration = 4000 });
+    }
+
+}

@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Common.Models;
 using DataAccess.Entities;
 using DataAccess.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -9,10 +9,7 @@ public class OrderRepository : Repository<Order>, IOrderRepository
 {
     private readonly AndersBrodContext _context;
 
-    public OrderRepository(AndersBrodContext context) : base(context)
-    {
-        _context = context;
-    }
+    public OrderRepository(AndersBrodContext context) : base(context) => _context = context;
     public async Task UpdateOrderIsShipped(int id, bool isShipped)
     {
         var order = await _context.Orders.FindAsync(id);

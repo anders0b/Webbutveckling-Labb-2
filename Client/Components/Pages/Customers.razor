@@ -1,0 +1,49 @@
+﻿@using Common.Models
+@using FrontEnd.Services
+@page "/customers"
+@inject CustomerService CustomerService
+@inject DialogService DialogService
+<RadzenText TextStyle="TextStyle.H3">Kunder</RadzenText>
+<RadzenText>
+    Här listas alla aktiva kunder.
+</RadzenText>
+<RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" class="mb-3">
+    <RadzenButton Click=@CreateCustomer Variant="Variant.Flat" Text="Skapa" />
+    <RadzenButton ButtonStyle="ButtonStyle.Danger" Click=@DeleteCustomer Variant="Variant.Flat" Text="Ta bort markerad" />
+</RadzenStack>
+<RadzenText TextStyle="TextStyle.H5">Kundlista</RadzenText>
+<RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="10" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                Data="@customers" TItem="Customer" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@selectedCustomer>
+    <Columns>
+        <RadzenDataGridColumn TItem="Customer" Property="Id" Filterable="false" Title="ID" Frozen="true" Width="80px" TextAlign="TextAlign.Center" />
+        <RadzenDataGridColumn TItem="Customer" Property="FirstName" Title="Förnamn" Frozen="true" Width="160px" />
+        <RadzenDataGridColumn TItem="Customer" Property="LastName" Title="Efternamn" Width="160px" />
+        <RadzenDataGridColumn TItem="Customer" Property="Email" Title="Email" Width="200px" />
+        <RadzenDataGridColumn TItem="Customer" Property="Phone" Title="Telefon" Width="120px" />
+        <RadzenDataGridColumn TItem="Customer" Property="StreetAddress" Title="Adress" FormatString="{0:d}" Width="160px" />
+        <RadzenDataGridColumn TItem="Customer" Property="PostalCode" Title="Postnummer" FormatString="{0:d}" Width="160px" />
+        <RadzenDataGridColumn TItem="Customer" Property="City" Title="Stad" Width="200px" />
+        <RadzenDataGridColumn TItem="Customer" Property="Orders.Count" Title="Antal ordrar" Width="160px" />
+    </Columns>
+</RadzenDataGrid>
+@code {
+    private IEnumerable<Customer> customers { get; set; }
+    IList<Customer> selectedCustomer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        customers = await CustomerService.GetAllCustomers();
+        selectedCustomer = new List<Customer>() { customers.FirstOrDefault() };
+    }
+    public async Task CreateCustomer()
+    {
+        await DialogService.OpenAsync<CreateCustomer>("Create Customer");
+        new DialogOptions() { Width = "700px", Height = "512px", Resizable = true, Draggable = true };
+    }
+    public async Task DeleteCustomer()
+    {
+        await CustomerService.DeleteCustomer(selectedCustomer.FirstOrDefault().Id);
+        customers = await CustomerService.GetAllCustomers();
+    }
+}

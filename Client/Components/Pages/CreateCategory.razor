@@ -1,0 +1,33 @@
+﻿@page "/categories/create-category"
+@using Common.Models
+@using FrontEnd.Services
+@inject CategoryService CategoryService
+@inject Radzen.DialogService dialogService
+@inject NotificationService notificationService
+<RadzenStack Gap="1rem" Orientation="Orientation.Vertical" JustifyContent="JustifyContent.SpaceBetween" Style="height: 100%;">
+    <RadzenTemplateForm TItem="Category" Data=@category Submit=@onSubmit InvalidSubmit=@onInvalidSubmit>
+        <RadzenRow AlignItems="AlignItems.End" Wrap="FlexWrap.Wrap" Gap="1rem" Class="rz-p-sm-12">
+            <RadzenFormField Text="Namn" Style="width: 100%;">
+                <RadzenTextBox @bind-Value="@category.Name" Style="width: 100%;"/>
+            </RadzenFormField>
+        </RadzenRow>
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="0.5rem">
+            <RadzenButton ButtonType="ButtonType.Submit" Variant="Variant.Flat" Text="Submit" Style="width: 120px" />
+            <RadzenButton Click="@((args) => dialogService.Close(true))" Variant="Variant.Outlined" Text="Close" Style="width: 120px" />
+        </RadzenStack>
+    </RadzenTemplateForm>
+</RadzenStack>
+
+
+@code {
+    private Category category { get; set; } = new();
+    public async Task onSubmit()
+    {
+        await CategoryService.CreateCategory(category);
+        category = new Category();
+    }
+    public void onInvalidSubmit()
+    {
+        notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = "Fel", Detail = "Var vänlig se över input", Duration = 4000 });
+    }
+}

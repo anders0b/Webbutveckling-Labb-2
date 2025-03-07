@@ -1,0 +1,102 @@
+﻿@page "/mina-ordrar"
+@using Common.Models
+@using DataAccess.Data
+@using FrontEnd.Services
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject OrderService OrderService
+@inject ProductService ProductService
+@inject ProtectedLocalStorage ProtectedLocalStore
+@inject CustomerService CustomerService
+<h3>Mina ordrar</h3>
+<RadzenDataGrid @ref="grid" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true" ExpandMode="@expandMode"
+                Data="@personalOrders" TItem="Order">
+    <Template Context="order">
+        <RadzenTabs>
+            <Tabs>
+                <RadzenTabsItem Text="Orderdetaljer">
+                    <RadzenDataGrid @ref="orderDetailsGrid" AllowFiltering="false" AllowPaging="true" AllowSorting="false" Data="@order.OrderDetails" TItem="OrderDetails">
+                        <Columns>
+                            <RadzenDataGridColumn TItem="OrderDetails" Property="Name" Title="Produkt">
+                                <Template Context="orderItem">
+                                    @Products.FirstOrDefault(x => x.Id == orderItem.ProductId)?.Name
+                                </Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="OrderDetails" Property="Quantity" Title="Antal">
+                                <FooterTemplate>
+                                    Totalt antal: @order.OrderDetails.Sum(x => x.Quantity)
+                                </FooterTemplate>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="OrderDetails" Title="Pris">
+                                <Template Context="orderItem">
+                                    @(Products.FirstOrDefault(x => x.Id == orderItem.ProductId)?.Price * orderItem.Quantity) kr
+                                </Template>
+                                <FooterTemplate>
+                                    Totalt: @order.OrderDetails.Sum(x => x.Quantity * Products.FirstOrDefault(p => p.Id == x.ProductId)?.Price) kr
+                                </FooterTemplate>
+                            </RadzenDataGridColumn>
+                        </Columns>
+                    </RadzenDataGrid>
+                </RadzenTabsItem>
+            </Tabs>
+        </RadzenTabs>
+    </Template>
+    <Columns>
+        <RadzenDataGridColumn TItem="Order" Property="Id" Title="Order ID" Width="120px" />
+        <RadzenDataGridColumn TItem="Order" Property="CustomerId" Title="Kund" Width="120px">
+            <Template Context="detail">
+                @CurrentCustomer.FirstName @CurrentCustomer.LastName
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="Order" Property="OrderDate" Title="Order Date" Width="200px"></RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="Order" Property="IsShipped" Title="Skickad?" Width="200px">
+            <Template Context="detail">
+                @(detail.IsShipped ? "Ja" : "Nej")
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+@code {
+    private List<Order> orders { get; set; } = new();
+    private List<Order> personalOrders { get; set; } = new();
+    private List<Product> Products { get; set; } = new();
+    private Customer CurrentCustomer { get; set; } = new();
+    DataGridExpandMode expandMode = DataGridExpandMode.Single;
+    RadzenDataGrid<Order> grid;
+    bool? allRowsExpanded;
+    RadzenDataGrid<OrderDetails> orderDetailsGrid;
+
+    async Task ToggleRowsExpand(bool? value)
+    {
+        allRowsExpanded = value;
+
+        if (value == true)
+        {
+            await grid.ExpandRows(grid.PagedView);
+        }
+        else if (value == false)
+        {
+            await grid.CollapseRows(grid.PagedView);
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        orders.AddRange(await OrderService.GetAllOrdersAndOrderDetails());
+        Products.AddRange(await ProductService.GetAllProducts());
+        await GetUser();
+
+    }
+
+    private async Task GetUser()
+    {
+        var loggedInUserId = await ProtectedLocalStore.GetAsync<ApplicationUser>("user");
+        if (loggedInUserId.Success)
+        {
+            CurrentCustomer = await CustomerService.GetCustomerByEmail(loggedInUserId.Value.Email);
+            var orderDetails= orders.Where(x => x.CustomerId == CurrentCustomer.Id).ToList();
+            personalOrders.AddRange(orderDetails);
+            await grid.Reload();
+        }
+    }
+
+}

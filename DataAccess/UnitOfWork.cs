@@ -1,6 +1,5 @@
 ﻿using DataAccess.Entities;
 using DataAccess.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess;
 

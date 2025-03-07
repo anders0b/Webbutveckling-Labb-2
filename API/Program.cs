@@ -4,11 +4,7 @@ using DataAccess.ServiceExtensions;
 using Services;
 using Services.Interfaces;
 
-
 var builder = WebApplication.CreateBuilder(args);
-
-//var connectionString = builder.Configuration.GetConnectionString("AndersBrodContext");
-//builder.Services.AddDbContext<AndersBrodContext>(options => options.UseSqlServer(connectionString));
 
 builder.Services.AddAndersBrodContext(builder.Configuration);
 builder.Services.AddScoped<IProductService, ProductService>();

@@ -1,5 +1,4 @@
-﻿using DataAccess.Entities;
-using DataAccess.Interfaces;
+﻿using Common.Models;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 

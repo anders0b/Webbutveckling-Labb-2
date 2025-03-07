@@ -1,0 +1,42 @@
+﻿@using Common.Models
+@using FrontEnd.Services
+@inject CategoryService CategoryService
+@page "/categories"
+@inject DialogService DialogService
+<RadzenText TextStyle="TextStyle.H3">Kategorier</RadzenText>
+<RadzenText>
+    Aktuella kategorier för våra produkter.
+</RadzenText>
+<RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" class="mb-3">
+    <RadzenButton Click=@CreateCustomer Variant="Variant.Flat" Text="Skapa" />
+    <RadzenButton ButtonStyle="ButtonStyle.Danger" Click=@DeleteCategory Variant="Variant.Flat" Text="Ta bort markerad" />
+</RadzenStack>
+<RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="10" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                Data="@categories" TItem="Category" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@selectedCategories>
+    <Columns>
+        <RadzenDataGridColumn TItem="Category" Property="Id" Filterable="false" Title="ID" Frozen="true" Width="80px" TextAlign="TextAlign.Start" />
+        <RadzenDataGridColumn TItem="Category" Property="Name" Title="Namn" Frozen="true" Width="200px" />
+    </Columns>
+</RadzenDataGrid>
+@code {
+    private IEnumerable<Category> categories { get; set; }
+    IList<Category> selectedCategories;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        categories = await CategoryService.GetAllCategories();
+        selectedCategories = new List<Category>() { categories.FirstOrDefault() };
+    }
+    public async Task CreateCustomer()
+    {
+        await DialogService.OpenAsync<CreateCategory>("Create Category");
+        new DialogOptions() { Width = "700px", Height = "512px", Resizable = true, Draggable = true };
+    }
+    public async Task DeleteCategory()
+    {
+        await CategoryService.DeleteCategory(selectedCategories.FirstOrDefault().Id);
+        categories = await CategoryService.GetAllCategories();
+    }
+    
+}

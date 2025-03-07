@@ -1,5 +1,7 @@
-﻿using DataAccess.Entities;
+﻿using DataAccess.Data;
+using DataAccess.Entities;
 using DataAccess.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +24,30 @@ public static class ServiceExtensions
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IOrderDetailsRepository, OrderDetailsRepository>();
 
+        return services;
+    }
+
+    public static IServiceCollection AddAuthentication(this IServiceCollection services, IConfiguration configuration)
+    {
+        var connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+        services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseSqlServer(connectionString));
+        services.AddDatabaseDeveloperPageExceptionFilter();
+        
+        services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = IdentityConstants.ApplicationScheme;
+                options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+            })
+            .AddIdentityCookies();
+
+        
+
+        services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddSignInManager()
+            .AddDefaultTokenProviders();
+        
         return services;
     }
 }

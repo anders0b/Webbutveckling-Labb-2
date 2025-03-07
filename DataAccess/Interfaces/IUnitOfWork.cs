@@ -1,6 +1,4 @@
-﻿using DataAccess.Entities;
-
-namespace DataAccess.Interfaces;
+﻿namespace DataAccess.Interfaces;
 
 public interface IUnitOfWork : IDisposable
 {
