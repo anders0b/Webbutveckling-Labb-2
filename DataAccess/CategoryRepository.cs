@@ -6,9 +6,9 @@ namespace DataAccess;
 
 public class CategoryRepository : Repository<Category>, ICategoryRepository
 {
-    private readonly AndersBrodContext _context;
-    public CategoryRepository(AndersBrodContext context) : base(context)
+    private readonly BrodDbContext _dbContext;
+    public CategoryRepository(BrodDbContext dbContext) : base(dbContext)
     {
-        _context = context;
+        _dbContext = dbContext;
     }
 }

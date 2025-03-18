@@ -3,9 +3,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Entities;
 
-public class AndersBrodContext : DbContext
-{ 
-    public AndersBrodContext(DbContextOptions<AndersBrodContext> options) : base(options) { }
+public class BrodDbContext(DbContextOptions<BrodDbContext> options) : DbContext(options)
+{
     public DbSet<Product> Products { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<Customer> Customers { get; set; }

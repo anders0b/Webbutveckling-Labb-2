@@ -15,15 +15,15 @@
 <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="10" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
                 Data="@customers" TItem="Customer" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@selectedCustomer>
     <Columns>
-        <RadzenDataGridColumn TItem="Customer" Property="Id" Filterable="false" Title="ID" Frozen="true" Width="80px" TextAlign="TextAlign.Center" />
-        <RadzenDataGridColumn TItem="Customer" Property="FirstName" Title="Förnamn" Frozen="true" Width="160px" />
-        <RadzenDataGridColumn TItem="Customer" Property="LastName" Title="Efternamn" Width="160px" />
-        <RadzenDataGridColumn TItem="Customer" Property="Email" Title="Email" Width="200px" />
-        <RadzenDataGridColumn TItem="Customer" Property="Phone" Title="Telefon" Width="120px" />
-        <RadzenDataGridColumn TItem="Customer" Property="StreetAddress" Title="Adress" FormatString="{0:d}" Width="160px" />
-        <RadzenDataGridColumn TItem="Customer" Property="PostalCode" Title="Postnummer" FormatString="{0:d}" Width="160px" />
-        <RadzenDataGridColumn TItem="Customer" Property="City" Title="Stad" Width="200px" />
-        <RadzenDataGridColumn TItem="Customer" Property="Orders.Count" Title="Antal ordrar" Width="160px" />
+        <RadzenDataGridColumn Property="Id" Filterable="false" Title="ID" Frozen="true" Width="80px" TextAlign="TextAlign.Center" />
+        <RadzenDataGridColumn Property="FirstName" Title="Förnamn" Frozen="true" Width="160px" />
+        <RadzenDataGridColumn Property="LastName" Title="Efternamn" Width="160px" />
+        <RadzenDataGridColumn Property="Email" Title="Email" Width="200px" />
+        <RadzenDataGridColumn Property="Phone" Title="Telefon" Width="120px" />
+        <RadzenDataGridColumn Property="StreetAddress" Title="Adress" FormatString="{0:d}" Width="160px" />
+        <RadzenDataGridColumn Property="PostalCode" Title="Postnummer" FormatString="{0:d}" Width="160px" />
+        <RadzenDataGridColumn Property="City" Title="Stad" Width="200px" />
+        <RadzenDataGridColumn Property="Orders.Count" Title="Antal ordrar" Width="160px" />
     </Columns>
 </RadzenDataGrid>
 @code {

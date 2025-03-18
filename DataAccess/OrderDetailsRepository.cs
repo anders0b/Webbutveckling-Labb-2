@@ -6,21 +6,21 @@ namespace DataAccess;
 
 public class OrderDetailsRepository : Repository<OrderDetails>, IOrderDetailsRepository
 {
-    private readonly AndersBrodContext context;
-    public OrderDetailsRepository(AndersBrodContext context) : base(context)
+    private readonly BrodDbContext _dbContext;
+    public OrderDetailsRepository(BrodDbContext dbContext) : base(dbContext)
     {
-        this.context = context;
+        this._dbContext = dbContext;
     }
     public async Task DeleteOrderDetails(int orderId, int productId)
     {
-        var orderDetail = await context.OrderDetails.FindAsync(orderId, productId);
-        context.OrderDetails.Remove(orderDetail);
-        await context.SaveChangesAsync();
+        var orderDetail = await _dbContext.OrderDetails.FindAsync(orderId, productId);
+        _dbContext.OrderDetails.Remove(orderDetail);
+        await _dbContext.SaveChangesAsync();
     }
     public async Task UpdateProductQuantity(int orderId, int productId, int quantity)
     {
-        var orderDetail = await context.OrderDetails.FindAsync(orderId, productId);
+        var orderDetail = await _dbContext.OrderDetails.FindAsync(orderId, productId);
         orderDetail.Quantity = quantity;
-        await context.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync();
     }
 }

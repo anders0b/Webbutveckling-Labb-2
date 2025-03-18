@@ -1,19 +1,10 @@
 ﻿@using Common.Models
-@using DataAccess.Data
-@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
-@using Microsoft.AspNetCore.Identity
 @using FrontEnd.Services
-@inject ProtectedLocalStorage ProtectedLocalStore
-@inject UserManager<ApplicationUser> UserManager
-@inject CustomerService CustomerService
 @inject NavigationManager NavigationManager
 @inject AppState AppState
 @inherits LayoutComponentBase
 <RadzenComponents/>
 <div hidden="true">
-    <AuthorizeView>
-        @GetUser(@context)
-   </AuthorizeView>
 </div>
 <RadzenLayout Style="grid-template-areas: 'rz-sidebar rz-header' 'rz-sidebar rz-body'">
     <RadzenHeader Style="display: grid;">
@@ -90,32 +81,7 @@
     private bool IsAdmin { get; set; }
     private string Name { get; set; }
     private List<Product> Cart { get; set; } = new();
-
-
-    public async Task GetUser(AuthenticationState context)
-    {
-        var potentialUserId = await ProtectedLocalStore.GetAsync<ApplicationUser>("user");
-        if (!potentialUserId.Success)
-        {
-            var user = context.User;
-            var applicationUser = await UserManager.GetUserAsync(user);
-            await ProtectedLocalStore.SetAsync("user", applicationUser);
-        }
-        if (potentialUserId.Success)
-        {
-            var user = context.User;
-            var applicationUser = await UserManager.GetUserAsync(user);
-            await ProtectedLocalStore.SetAsync("user", applicationUser);
-            CurrentCustomer = await CustomerService.GetCustomerByEmail(applicationUser.Email);
-            if (Name == null)
-            {
-                Name = CurrentCustomer.FirstName;
-                await ProtectedLocalStore.SetAsync("cart", Cart);
-                StateHasChanged();
-                AppState.OnChange += StateHasChanged;
-            }
-        }
-    }
+    
 }
 
 <div id="blazor-error-ui">

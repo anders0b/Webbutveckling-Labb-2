@@ -6,30 +6,30 @@ namespace DataAccess;
 
 public class Repository<T> : IRepository<T> where T : class
 {
-    private readonly AndersBrodContext _context;
+    private readonly BrodDbContext _dbContext;
 
-    public Repository(AndersBrodContext context)
+    public Repository(BrodDbContext dbContext)
     {
-        _context = context;
+        _dbContext = dbContext;
     }
     public async Task<IEnumerable<T>> GetAll()
     {
-        return await _context.Set<T>().ToListAsync();
+        return await _dbContext.Set<T>().ToListAsync();
     }
     public async Task<T?> GetById(int id)
     {
-        return await _context.Set<T>().FindAsync(id);
+        return await _dbContext.Set<T>().FindAsync(id);
     }
     public async Task Add(T entity)
     {
-        await _context.Set<T>().AddAsync(entity);
+        await _dbContext.Set<T>().AddAsync(entity);
     }
     public async Task Update(T entity)
     {
-        _context.Set<T>().Update(entity);
+        _dbContext.Set<T>().Update(entity);
     }
     public async Task Delete(T entity)
     {
-        _context.Set<T>().Remove(entity);
+        _dbContext.Set<T>().Remove(entity);
     }
 }

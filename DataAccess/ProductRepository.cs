@@ -4,36 +4,32 @@ using DataAccess.Interfaces;
 
 namespace DataAccess;
 
-public class ProductRepository : Repository<Product>, IProductRepository
+public class ProductRepository(BrodDbContext dbContext) : Repository<Product>(dbContext), IProductRepository
 {
-    private readonly AndersBrodContext context;
-    public ProductRepository(AndersBrodContext context) : base(context)
-    {
-        this.context = context;
-    }
+    private readonly BrodDbContext _dbContext = dbContext;
 
     public async Task<Product?> GetProductByName(string name)
     {
-        return await context.Products.FindAsync(name);
+        return await _dbContext.Products.FindAsync(name);
     }
 
     public async Task UpdateProductStatus(int id, bool status)
     {
-        var product = await context.Products.FindAsync(id);
+        var product = await _dbContext.Products.FindAsync(id);
         product.Status = status;
-        await context.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync();
     }
 
     public async Task UpdateProductCategory(int productId, int categoryId)
     {
-        var product = await context.Products.FindAsync(productId);
+        var product = await _dbContext.Products.FindAsync(productId);
         product.CategoryId = categoryId;
-        await context.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync();
     }
     public async Task RemoveProductCategory(int productId, int categoryId)
     {
-        var product = await context.Products.FindAsync(productId);
+        var product = await _dbContext.Products.FindAsync(productId);
         product.CategoryId = 0;
-        await context.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync();
     }
 }

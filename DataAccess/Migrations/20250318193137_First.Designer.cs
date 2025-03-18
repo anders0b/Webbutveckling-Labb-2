@@ -11,21 +11,21 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DataAccess.Migrations
 {
-    [DbContext(typeof(AndersBrodContext))]
-    [Migration("20240521074421_Initial")]
-    partial class Initial
+    [DbContext(typeof(BrodDbContext))]
+    [Migration("20250318193137_First")]
+    partial class First
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.2")
+                .HasAnnotation("ProductVersion", "9.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("DataAccess.Entities.Category", b =>
+            modelBuilder.Entity("Common.Models.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -42,7 +42,7 @@ namespace DataAccess.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("DataAccess.Entities.Customer", b =>
+            modelBuilder.Entity("Common.Models.Customer", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -82,7 +82,7 @@ namespace DataAccess.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("DataAccess.Entities.Order", b =>
+            modelBuilder.Entity("Common.Models.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -106,7 +106,7 @@ namespace DataAccess.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("DataAccess.Entities.OrderDetails", b =>
+            modelBuilder.Entity("Common.Models.OrderDetails", b =>
                 {
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
@@ -124,7 +124,7 @@ namespace DataAccess.Migrations
                     b.ToTable("OrderDetails");
                 });
 
-            modelBuilder.Entity("DataAccess.Entities.Product", b =>
+            modelBuilder.Entity("Common.Models.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -156,24 +156,24 @@ namespace DataAccess.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("DataAccess.Entities.Order", b =>
+            modelBuilder.Entity("Common.Models.Order", b =>
                 {
-                    b.HasOne("DataAccess.Entities.Customer", null)
+                    b.HasOne("Common.Models.Customer", null)
                         .WithMany("Orders")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("DataAccess.Entities.OrderDetails", b =>
+            modelBuilder.Entity("Common.Models.OrderDetails", b =>
                 {
-                    b.HasOne("DataAccess.Entities.Order", "Order")
+                    b.HasOne("Common.Models.Order", "Order")
                         .WithMany("OrderDetails")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DataAccess.Entities.Product", "Product")
+                    b.HasOne("Common.Models.Product", "Product")
                         .WithMany("OrderDetails")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -184,31 +184,31 @@ namespace DataAccess.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("DataAccess.Entities.Product", b =>
+            modelBuilder.Entity("Common.Models.Product", b =>
                 {
-                    b.HasOne("DataAccess.Entities.Category", null)
+                    b.HasOne("Common.Models.Category", null)
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("DataAccess.Entities.Category", b =>
+            modelBuilder.Entity("Common.Models.Category", b =>
                 {
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("DataAccess.Entities.Customer", b =>
+            modelBuilder.Entity("Common.Models.Customer", b =>
                 {
                     b.Navigation("Orders");
                 });
 
-            modelBuilder.Entity("DataAccess.Entities.Order", b =>
+            modelBuilder.Entity("Common.Models.Order", b =>
                 {
                     b.Navigation("OrderDetails");
                 });
 
-            modelBuilder.Entity("DataAccess.Entities.Product", b =>
+            modelBuilder.Entity("Common.Models.Product", b =>
                 {
                     b.Navigation("OrderDetails");
                 });

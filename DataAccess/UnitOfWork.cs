@@ -5,15 +5,15 @@ namespace DataAccess;
 
 public class UnitOfWork : IUnitOfWork
 {
-    private readonly AndersBrodContext _context;
-    public UnitOfWork(AndersBrodContext context)
+    private readonly BrodDbContext _dbContext;
+    public UnitOfWork(BrodDbContext dbContext)
     {
-        _context = context;
-        Products = new ProductRepository(_context);
-        Customers = new CustomerRepository(_context);
-        Categories = new CategoryRepository(_context);
-        Orders = new OrderRepository(_context);
-        OrderDetails = new OrderDetailsRepository(_context);
+        _dbContext = dbContext;
+        Products = new ProductRepository(_dbContext);
+        Customers = new CustomerRepository(_dbContext);
+        Categories = new CategoryRepository(_dbContext);
+        Orders = new OrderRepository(_dbContext);
+        OrderDetails = new OrderDetailsRepository(_dbContext);
     }
     public IProductRepository Products { get; }
     public ICustomerRepository Customers { get; }
@@ -23,7 +23,7 @@ public class UnitOfWork : IUnitOfWork
 
     public void Commit()
     {
-        _context.SaveChanges();
+        _dbContext.SaveChanges();
     }
     public void Rollback()
     {
@@ -38,7 +38,7 @@ public class UnitOfWork : IUnitOfWork
     {
         if (disposing)
         {
-            _context.Dispose();
+            _dbContext.Dispose();
         }
     }
 }

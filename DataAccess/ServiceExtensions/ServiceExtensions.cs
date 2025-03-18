@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ApplicationDbContext = DataAccess.Entities.ApplicationDbContext;
 
 namespace DataAccess.ServiceExtensions;
 
@@ -13,7 +14,7 @@ public static class ServiceExtensions
     public static IServiceCollection AddAndersBrodContext(this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddDbContext<AndersBrodContext>(options =>
+        services.AddDbContext<BrodDbContext>(options =>
         {
             options.UseSqlServer(configuration.GetConnectionString("AndersBrodDb"));
         });
@@ -40,9 +41,7 @@ public static class ServiceExtensions
                 options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
             })
             .AddIdentityCookies();
-
         
-
         services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddSignInManager()

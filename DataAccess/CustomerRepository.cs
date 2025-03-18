@@ -7,18 +7,18 @@ namespace DataAccess;
 
 public class CustomerRepository : Repository<Customer>, ICustomerRepository
 {
-    private readonly AndersBrodContext context;
-    public CustomerRepository(AndersBrodContext context) : base(context)
+    private readonly BrodDbContext _dbContext;
+    public CustomerRepository(BrodDbContext dbContext) : base(dbContext)
     {
-        this.context = context;
+        this._dbContext = dbContext;
     }
     public async Task<Customer?> GetCustomerByEmail(string email)
     {
-        return await context.Customers.FirstOrDefaultAsync(c => c.Email == email);
+        return await _dbContext.Customers.FirstOrDefaultAsync(c => c.Email == email);
     }
     public async Task<IEnumerable<Customer>> GetCustomersByCity(string city)
     {
-        var customers = context.Customers.Where(c => c.City == city);
+        var customers = _dbContext.Customers.Where(c => c.City == city);
         return customers;
     }
 
