@@ -16,7 +16,7 @@ public static class ServiceExtensions
     {
         services.AddDbContext<BrodDbContext>(options =>
         {
-            options.UseSqlServer(configuration.GetConnectionString("AndersBrodDb"));
+            options.UseSqlite(configuration.GetConnectionString("AndersBrodDb"));
         });
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IProductRepository, ProductRepository>();
@@ -30,9 +30,9 @@ public static class ServiceExtensions
 
     public static IServiceCollection AddAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("AuthenticationDb") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+        var connectionString = configuration.GetConnectionString("AuthenticationDb") ?? throw new InvalidOperationException("Connection string 'AuthenticationDb' not found.");
         services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(connectionString));
+            options.UseSqlite(connectionString));
         services.AddDatabaseDeveloperPageExceptionFilter();
         
         services.AddAuthentication(options =>

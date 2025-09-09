@@ -17,7 +17,7 @@ public class BrodDbContextFactory : IDesignTimeDbContextFactory<BrodDbContext>
         var optionsBuilder = new DbContextOptionsBuilder<BrodDbContext>();
         var connectionString = configuration.GetConnectionString("AndersBrodDb");
 
-        optionsBuilder.UseSqlServer(connectionString);
+        optionsBuilder.UseSqlite(connectionString);
 
         return new BrodDbContext(optionsBuilder.Options);
     }
