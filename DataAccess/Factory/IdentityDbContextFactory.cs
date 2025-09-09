@@ -15,7 +15,7 @@ namespace DataAccess.Factory
                 .Build();
 
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            var connectionString = configuration.GetConnectionString("AuthenticationDb");
 
             optionsBuilder.UseSqlServer(connectionString);
 

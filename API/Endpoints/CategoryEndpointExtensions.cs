@@ -14,25 +14,25 @@ public static class CategoryEndpointExtensions
             var categories = await categoryService.GetAllCategories();
             return Results.Ok(categories);
         });
-        group.MapGet("{id}", async (ICategoryService categoryService, int id) =>
+        
+        group.MapGet("{id:int}", async (ICategoryService categoryService, int id) =>
         {
             var category = await categoryService.GetCategoryById(id);
-            if (category == null)
-            {
-                return Results.BadRequest("Id not found");
-            }
-            return Results.Ok(category);
+            return category == null ? Results.BadRequest("Id not found") : Results.Ok(category);
         });
+        
         group.MapPost("", async (ICategoryService categoryService, Category category) =>
         {
             await categoryService.CreateCategory(category);
             return Results.Created($"/api/categories/{category.Id}", category);
         });
-        group.MapDelete("{id}", async (ICategoryService categoryService, int id) =>
+        
+        group.MapDelete("{id:int}", async (ICategoryService categoryService, int id) =>
         {
             await categoryService.DeleteCategory(id);
             return Results.NoContent();
         });
+        
         return app;
     }
 }

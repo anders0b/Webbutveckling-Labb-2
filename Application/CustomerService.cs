@@ -4,57 +4,44 @@ using Services.Interfaces;
 
 namespace Services;
 
-public class CustomerService : ICustomerService
+public class CustomerService(IUnitOfWork unitOfWork) : ICustomerService
 {
-    public IUnitOfWork _unitOfWork;
-    public CustomerService(IUnitOfWork unitOfWork)
-    {
-        _unitOfWork = unitOfWork;
-    }
     public async Task<IEnumerable<Customer>> GetAllCustomers()
     {
-        var customers = await _unitOfWork.Customers.GetAll();
+        var customers = await unitOfWork.Customers.GetAll();
         return customers;
     }
 
     public async Task<Customer?> GetCustomerById(int id)
     {
-        var customer = await _unitOfWork.Customers.GetById(id);
-        if (customer != null)
-        {
-            return customer;
-        }
-        return null;
+        var customer = await unitOfWork.Customers.GetById(id);
+        return customer;
     }
 
     public async Task<Customer?> GetCustomerByEmail(string email)
     {
-        var customer = await _unitOfWork.Customers.GetCustomerByEmail(email);
-        if (customer != null)
-        {
-            return customer;
-        }
-        return null;
+        var customer = await unitOfWork.Customers.GetCustomerByEmail(email);
+        return customer;
     }
 
     public async Task<IEnumerable<Customer>> GetCustomersByCity(string city)
     {
-        var customers = await _unitOfWork.Customers.GetCustomersByCity(city);
+        var customers = await unitOfWork.Customers.GetCustomersByCity(city);
         return customers;
     }
 
     public async Task AddCustomer(Customer customer)
     {
-        var existingCustomer = await _unitOfWork.Customers.GetCustomerByEmail(customer.Email);
+        var existingCustomer = await unitOfWork.Customers.GetCustomerByEmail(customer.Email);
         if (existingCustomer == null)
         {
-            await _unitOfWork.Customers.Add(customer);
-            _unitOfWork.Commit();
+            await unitOfWork.Customers.Add(customer);
+            unitOfWork.Commit();
         }
     }
     public async Task UpdateCustomer(Customer customer)
     {
-        var customerToUpdate = await _unitOfWork.Customers.GetById(customer.Id);
+        var customerToUpdate = await unitOfWork.Customers.GetById(customer.Id);
         if (customerToUpdate != null)
         {
             customerToUpdate.FirstName = customer.FirstName;
@@ -65,17 +52,17 @@ public class CustomerService : ICustomerService
             customerToUpdate.PostalCode = customer.PostalCode;
             customerToUpdate.City = customer.City;
             customerToUpdate.Orders = customer.Orders;
-            await _unitOfWork.Customers.Update(customerToUpdate);
-            _unitOfWork.Commit();
+            await unitOfWork.Customers.Update(customerToUpdate);
+            unitOfWork.Commit();
         }
     }
     public async Task DeleteCustomer(int id)
     {
-        var customer = await _unitOfWork.Customers.GetById(id);
+        var customer = await unitOfWork.Customers.GetById(id);
         if (customer != null)
         {
-            await _unitOfWork.Customers.Delete(customer);
-            _unitOfWork.Commit();
+            await unitOfWork.Customers.Delete(customer);
+            unitOfWork.Commit();
         }
     }
 }
